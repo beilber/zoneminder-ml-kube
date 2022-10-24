@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoneminder-ml
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - env:
+        - name: TZ
+          value: America/New_York
+        - name: PUID
+          value: "99"
+        - name: PGID
+          value: "100"
+        - name: MULTI_PORT_START
+          value: "0"
+        - name: MULTI_PORT_END
+          value: "0"
+        image: dlandon/zoneminder.machine.learning:latest
+        imagePullPolicy: Always
+        name: zoneminder
+        volumeMounts:
+        - mountPath: /config
+          name: zoneminder-config
+        - mountPath: /var/cache/zoneminder
+          name: zoneminder-data
+      volumes:
+      - name: zoneminder-config
+        persistentVolumeClaim:
+          claimName: zoneminder-config
+      - name: zoneminder-data
+        persistentVolumeClaim:
+          claimName: zoneminder-data
